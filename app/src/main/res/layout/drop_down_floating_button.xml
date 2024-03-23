@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:fitsSystemWindows="true">
+
+    <com.example.autotapper.presentation.custom_views.DropDownFloatingActionButton
+        android:id="@+id/mainFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="40dp"
+        android:clickable="true"
+        android:src="@android:drawable/ic_input_add"
+        android:theme="@style/Theme.MaterialComponents.Light"
+        android:tint="@color/white"
+        app:backgroundTint="@color/dropDownButtonBackground" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/miniFab1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:src="@android:drawable/ic_input_add"
+        android:theme="@style/Theme.MaterialComponents.Light"
+        app:behavior_autoHide="false"
+        app:fabSize="mini"
+        app:layout_anchor="@id/mainFab"
+        app:layout_anchorGravity="center" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/miniFab2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:src="@android:drawable/ic_input_add"
+        android:theme="@style/Theme.MaterialComponents.Light"
+        app:behavior_autoHide="false"
+        app:fabSize="mini"
+        app:layout_anchor="@id/mainFab"
+        app:layout_anchorGravity="center" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/miniFab3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:src="@android:drawable/ic_input_add"
+        android:theme="@style/Theme.MaterialComponents.Light"
+        app:behavior_autoHide="false"
+        app:fabSize="mini"
+        app:layout_anchor="@id/mainFab"
+        app:layout_anchorGravity="center" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+

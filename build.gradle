@@ -1,0 +1,36 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+
+buildscript {
+
+    ext {
+        hiltVersion = "2.44"
+        Libs = [
+                Android: [
+                        CoreKtx: "androidx.core:core-ktx:1.9.0",
+                        AppCompat: "androidx.appcompat:appcompat:1.6.1",
+                        ConstraintLayout: "androidx.constraintlayout:constraintlayout:2.1.4",
+                        FragmentKtx: "androidx.fragment:fragment-ktx:1.5.5",
+                        LifecycleRuntimeKtx: "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1",
+                        LifecycleViewModelKtx: "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1",
+                        CoordinatorLayout: "androidx.coordinatorlayout:coordinatorlayout:1.2.0"
+                ],
+                Google: [
+                        Material: "com.google.android.material:material:1.6.1",
+                        Hilt: "com.google.dagger:hilt-android:$hiltVersion",
+                        HiltCompiler: "com.google.dagger:hilt-compiler:$hiltVersion",
+                ],
+                Testing: [
+                        JUnit: "junit:junit:4.13.2",
+                        ExtJunit: "androidx.test.ext:junit:1.1.5",
+                        Espresso: "androidx.test.espresso:espresso-core:3.5.1"
+                ]
+        ]
+    }
+}
+
+plugins {
+    id 'com.android.application' version '8.1.2' apply false
+    id 'org.jetbrains.kotlin.android' version '1.9.0' apply false
+    id 'com.google.dagger.hilt.android' version '2.44' apply false
+}

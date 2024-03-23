@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">AutoTapper</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="touch_service_name">AutoTapperService</string>
+    <string name="touch_service_description">My description\n</string>
+</resources>
