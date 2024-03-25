@@ -18,11 +18,11 @@
         app:backgroundTint="@color/dropDownButtonBackground" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/miniFab1"
+        android:id="@+id/fabRecord"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:src="@android:drawable/ic_input_add"
+        android:src="@drawable/ic_record"
         android:theme="@style/Theme.MaterialComponents.Light"
         app:behavior_autoHide="false"
         app:fabSize="mini"
@@ -30,11 +30,11 @@
         app:layout_anchorGravity="center" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/miniFab2"
+        android:id="@+id/fabPlayStop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:src="@android:drawable/ic_input_add"
+        android:src="@drawable/ic_play"
         android:theme="@style/Theme.MaterialComponents.Light"
         app:behavior_autoHide="false"
         app:fabSize="mini"
@@ -42,11 +42,11 @@
         app:layout_anchorGravity="center" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/miniFab3"
+        android:id="@+id/fabCleanTouches"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:src="@android:drawable/ic_input_add"
+        android:src="@drawable/ic_clear"
         android:theme="@style/Theme.MaterialComponents.Light"
         app:behavior_autoHide="false"
         app:fabSize="mini"

@@ -34,8 +34,6 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
     @Inject
     lateinit var factory: MainViewModel.Factory
 
-    @Inject
-    lateinit var touchCatcherService: TouchCatcherService
 
     override val viewModel: MainViewModel by screenViewModel {
         factory.create(getMainNavigator(), getBaseScreen())
@@ -75,7 +73,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
 
         buttonStop.setOnClickListener {
             TapperButtonService.stop(nestedActivity)
-            touchCatcherService.disable()
+            TouchCatcherService.instance?.disable()
         }
     }
 
