@@ -2,7 +2,7 @@ package com.example.autotapper.data
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.autotapper.domain.SettingsRepository
+import com.example.autotapper.domain.repositories.SettingsRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton

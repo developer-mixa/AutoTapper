@@ -1,7 +1,6 @@
 package com.example.autotapper.utils
 
 import android.widget.Toast
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 

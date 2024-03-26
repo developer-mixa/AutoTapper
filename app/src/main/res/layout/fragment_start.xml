@@ -11,7 +11,7 @@
         android:id="@+id/startTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World"
+        android:text="@string/start_message"
         android:textColor="@color/white"
         android:textSize="34dp"
         android:layout_gravity="center"

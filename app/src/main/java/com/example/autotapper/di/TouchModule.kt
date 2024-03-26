@@ -1,7 +1,7 @@
 package com.example.autotapper.di
 
 import com.example.autotapper.data.InMemoryTouchRepository
-import com.example.autotapper.domain.TouchRepository
+import com.example.autotapper.domain.repositories.TouchRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

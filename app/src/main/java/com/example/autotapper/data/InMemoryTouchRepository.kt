@@ -1,24 +1,25 @@
 package com.example.autotapper.data
 
-import android.util.Log
-import com.example.autotapper.domain.Touch
-import com.example.autotapper.domain.TouchRepository
+import com.example.autotapper.domain.models.Touch
+import com.example.autotapper.domain.repositories.TouchRepository
+import com.example.autotapper.domain.repositories.TouchStateRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class InMemoryTouchRepository @Inject constructor() : TouchRepository {
+class InMemoryTouchRepository @Inject constructor(
+    private val logger: Logger,
+    private val touchStateRepository: TouchStateRepository
+) : TouchRepository {
 
     private val allTouches: MutableList<Touch> = mutableListOf()
-    var choosing = false
-    var performing = false
 
     /**
      * adds a user's click to the click list
      */
     override fun addTouch(touch: Touch) {
-        if(choosing){
-            Log.d("MyLog", "added $touch")
+        if(touchStateRepository.isChoosing()){
+            logger.log("Touch was added.")
             allTouches.add(touch)
         }
     }
@@ -36,14 +37,5 @@ class InMemoryTouchRepository @Inject constructor() : TouchRepository {
     override fun getAllTouches(): List<Touch> {
         return allTouches
     }
-
-    /**
-     * Changes a choosing state
-     */
-    override fun refreshChoose() {
-        choosing = !choosing
-
-    }
-
 
 }

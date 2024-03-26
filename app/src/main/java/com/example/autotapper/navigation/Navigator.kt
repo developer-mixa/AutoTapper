@@ -7,12 +7,12 @@ interface Navigator {
 
     fun launch(screen: BaseScreen, addToBackStack: Boolean = false, aboveAll: Boolean = false)
 
-    fun goBack(result: Any? = null)
+    fun goBack()
 
     fun toast(@StringRes messageRes: Int)
 
     fun toast(messageString: String)
 
-    fun activityScope(block: (AppCompatActivity) -> Unit)
+    fun activityScope(block: (AppCompatActivity) -> Any)
 
 }

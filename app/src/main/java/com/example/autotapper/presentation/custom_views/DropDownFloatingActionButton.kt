@@ -5,14 +5,14 @@ import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.os.Build
 import android.util.AttributeSet
 import android.widget.Checkable
-import androidx.annotation.RequiresApi
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.example.autotapper.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import java.util.Collections
+
 
 class DropDownFloatingActionButton @JvmOverloads constructor(
     context: Context,
@@ -65,6 +65,20 @@ class DropDownFloatingActionButton @JvmOverloads constructor(
     }
 
     private fun playAnimation(){
-        if(isChecked) animatorSet.start() else animatorSet.reverse()
+        if(isChecked) animatorSet.start() else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            animatorSet.reverse()
+        } else{
+            reverseSequentialAnimatorSet(animatorSet).start()
+        }
     }
+    private fun reverseSequentialAnimatorSet(animatorSet: AnimatorSet): AnimatorSet {
+        val animators = animatorSet.childAnimations
+        animators.reverse()
+        val reversedAnimatorSet = AnimatorSet()
+        reversedAnimatorSet.playSequentially(animators)
+        reversedAnimatorSet.duration = animatorSet.duration
+        reversedAnimatorSet.interpolator = animatorSet.interpolator
+        return reversedAnimatorSet
+    }
+
 }

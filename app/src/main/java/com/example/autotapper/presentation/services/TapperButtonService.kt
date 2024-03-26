@@ -5,9 +5,8 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
-import android.os.Debug
+import android.os.Build
 import android.os.IBinder
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -15,10 +14,12 @@ import android.view.View
 import android.view.View.OnTouchListener
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import com.example.autotapper.R
-import com.example.autotapper.data.InMemoryTouchRepository
 import com.example.autotapper.databinding.DropDownFloatingButtonBinding
+import com.example.autotapper.domain.repositories.TouchStateRepository
+import com.example.autotapper.domain.usecases.RemoveAllTouchesUseCase
 import com.example.autotapper.presentation.activities.MainActivity
 import com.example.autotapper.utils.initTranslationAnim
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -33,7 +34,11 @@ class TapperButtonService @Inject constructor() : Service(), OnTouchListener {
     private lateinit var overlayView: View
 
     @Inject
-    lateinit var touchRepository: InMemoryTouchRepository
+    lateinit var removeAllTouchesUseCase: RemoveAllTouchesUseCase
+
+    @Inject
+    lateinit var touchStateRepository: TouchStateRepository
+
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -47,6 +52,7 @@ class TapperButtonService @Inject constructor() : Service(), OnTouchListener {
     private var waitForChooseParams: WindowManager.LayoutParams? = null
 
     private lateinit var binding: DropDownFloatingButtonBinding
+    private var clickSpeed: Int = 100
 
 
     private fun setupFabs() = with(binding) {
@@ -94,29 +100,43 @@ class TapperButtonService @Inject constructor() : Service(), OnTouchListener {
 
     }
 
-    private fun cleanTouches() = touchRepository.removeAllTouches()
+    private fun cleanTouches() = removeAllTouchesUseCase()
 
-    private fun performTouches() {
-        touchRepository.performing = !touchRepository.performing
+    private fun performTouches() = with(binding) {
+        TouchCatcherService.instance?.refreshTapping(clickSpeed.toLong())
 
-        if (touchRepository.performing) TouchCatcherService.instance?.startTapping() else TouchCatcherService.instance?.stopTapping()
-
-        val imageResource =
-            if (touchRepository.performing) R.drawable.ic_stop else R.drawable.ic_play
-
-        binding.fabPlayStop.setImageResource(imageResource)
+        fabPlayStop.updateButtonState(
+            isStateActive = touchStateRepository.isPerforming(),
+            activeImageResource = R.drawable.ic_stop,
+            inactiveImageResource = R.drawable.ic_play
+        )
     }
 
-    private fun recordTouches() {
-        touchRepository.refreshChoose()
+    private fun recordTouches() = with(binding) {
+        touchStateRepository.refreshChoose()
 
-        val imageResource =
-            if (touchRepository.choosing) R.drawable.ic_stop else R.drawable.ic_record
-
-        binding.fabRecord.setImageResource(imageResource)
+        fabRecord.updateButtonState(
+            isStateActive = touchStateRepository.isChoosing(),
+            activeImageResource = R.drawable.ic_stop,
+            inactiveImageResource = R.drawable.ic_record
+        )
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+    private fun FloatingActionButton.updateButtonState(
+        isStateActive: Boolean,
+        @DrawableRes activeImageResource: Int,
+        @DrawableRes inactiveImageResource: Int,
+    ) {
+        val imageResource = if (isStateActive) activeImageResource else inactiveImageResource
+        setImageResource(imageResource)
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        clickSpeed = intent?.getIntExtra(CLICK_SPEED_KEY, 100) ?: 100
+        return super.onStartCommand(intent, flags, startId)
+    }
+
+    @SuppressLint("ClickableViewAccessibility", "InflateParams")
     override fun onCreate() {
         super.onCreate()
 
@@ -136,7 +156,9 @@ class TapperButtonService @Inject constructor() : Service(), OnTouchListener {
         waitForChooseParams = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY else
+                WindowManager.LayoutParams.TYPE_PHONE,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
             PixelFormat.TRANSLUCENT
         ).apply {
@@ -186,8 +208,10 @@ class TapperButtonService @Inject constructor() : Service(), OnTouchListener {
     }
 
     companion object {
-        fun start(activity: AppCompatActivity) {
-            val intent = Intent(activity, TapperButtonService::class.java)
+        fun start(activity: AppCompatActivity, speed: Int) {
+            val intent = Intent(activity, TapperButtonService::class.java).apply {
+                putExtra(CLICK_SPEED_KEY, speed)
+            }
             activity.startService(intent)
         }
 
@@ -195,6 +219,8 @@ class TapperButtonService @Inject constructor() : Service(), OnTouchListener {
             val intent = Intent(activity, TapperButtonService::class.java)
             activity.stopService(intent)
         }
+
+        private const val CLICK_SPEED_KEY = "click_speed_key"
     }
 
 }

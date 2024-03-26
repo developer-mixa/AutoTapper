@@ -7,8 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.example.autotapper.R
 import com.example.autotapper.presentation.activities.MainActivity
 
@@ -19,9 +17,6 @@ class MainNavigator(
 ): AndroidViewModel(application), Navigator {
 
     val whenActivityActive = MainActivityActions()
-
-    private val _result = MutableLiveData<Event<Any>>()
-    val result: LiveData<Event<Any>> = _result
 
     /**
      * Launches fragment from screen
@@ -41,10 +36,7 @@ class MainNavigator(
      *
      * @param result -> result to previous fragment
      */
-    override fun goBack(result: Any?) = whenActivityActive{
-        if (result != null){
-            _result.value = Event(result)
-        }
+    override fun goBack() = whenActivityActive{
         it.onBackPressedDispatcher.onBackPressed()
     }
 
@@ -64,12 +56,12 @@ class MainNavigator(
     /**
      * Scope which let us do something with Activity Context
      */
-    override fun activityScope(block: (AppCompatActivity) -> Unit) = whenActivityActive{
+    override fun activityScope(block: (AppCompatActivity) -> Any) = whenActivityActive{
         block(it)
     }
 
     /**
-     * Launches fragment fron MainActivity
+     * Launches fragment from MainActivity
      *
      * @param activity -> Our main activity
      * @param screen -> Screen of a need fragment
@@ -77,7 +69,7 @@ class MainNavigator(
      * @param idContainer -> Container where we launch the fragment
      */
     fun launchFragment(activity: MainActivity, screen: BaseScreen, addToBackStack: Boolean = false, @IdRes idContainer: Int = R.id.fragmentContainer){
-        val fragment = screen.javaClass.enclosingClass.newInstance() as Fragment
+        val fragment = screen.javaClass.enclosingClass.getDeclaredConstructor().newInstance() as Fragment
         fragment.arguments = bundleOf(ARG_SCREEN to screen)
         val transaction = activity.supportFragmentManager.beginTransaction()
 

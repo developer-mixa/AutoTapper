@@ -5,11 +5,12 @@ import android.accessibilityservice.AccessibilityServiceInfo
 import android.accessibilityservice.GestureDescription
 import android.graphics.Path
 import android.graphics.Rect
-import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import androidx.annotation.RequiresApi
-import com.example.autotapper.data.InMemoryTouchRepository
-import com.example.autotapper.domain.Touch
+import com.example.autotapper.data.Logger
+import com.example.autotapper.domain.models.Touch
+import com.example.autotapper.domain.repositories.TouchRepository
+import com.example.autotapper.domain.repositories.TouchStateRepository
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,34 +26,30 @@ import javax.inject.Inject
 class TouchCatcherService @Inject constructor() : AccessibilityService() {
 
     @Inject
-    lateinit var touchRepository: InMemoryTouchRepository
+    lateinit var touchRepository: TouchRepository
 
-    private var job: Job? = null
+    @Inject
+    lateinit var touchStateRepository: TouchStateRepository
+
+    @Inject
+    lateinit var logger: Logger
+
+    private var serviceJob = Job()
+    private var serviceScope = CoroutineScope(Dispatchers.Default + serviceJob)
 
     @RequiresApi(34)
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
-        if (event.eventType == AccessibilityEvent.TYPE_VIEW_CLICKED && !touchRepository.performing) {
+        if (event.eventType == AccessibilityEvent.TYPE_VIEW_CLICKED && !touchStateRepository.isPerforming()) {
 
             val sourceNode = event.source
             if (sourceNode != null) {
                 val bounds = Rect()
                 sourceNode.getBoundsInScreen(bounds)
-
-                val left = bounds.left
-                val top = bounds.top
-                val right = bounds.right
-                val bottom = bounds.bottom
-
-                if (touchRepository.choosing) {
+                if (touchStateRepository.isChoosing()) {
                     touchRepository.addTouch(Touch(bounds.left.toFloat(), bounds.top.toFloat()))
                 }
-
-                Log.d("MyLog", "left $left top $top right $right bottom $bottom")
-                sourceNode.recycle()
             }
         }
-
-
     }
 
 
@@ -85,27 +82,36 @@ class TouchCatcherService @Inject constructor() : AccessibilityService() {
         stopSelf()
     }
 
-    fun startTapping() {
+    fun refreshTapping(speed: Long){
+        touchStateRepository.refreshPerforming()
+        if(touchStateRepository.isPerforming()) startTapping(speed) else stopTapping()
+    }
+
+    private fun startTapping(speed: Long) {
         //I'm re-assigning the job, because after cancel(), the coroutine is not available
+
+        serviceJob = Job()
+        serviceScope = CoroutineScope(Dispatchers.Default + serviceJob)
+
         val touches = touchRepository.getAllTouches()
-        job = CoroutineScope(Dispatchers.Default).launch {
+        serviceScope.launch {
             while (isActive) {
-                if (touchRepository.performing) {
+                if (touchStateRepository.isPerforming()) {
                     touches.forEach {
+                        delay(speed)
                         performClick(it.x, it.y)
-                        delay(100)
                     }
                 }
             }
         }
     }
 
-    fun stopTapping() {
-        job?.cancel()
+    private fun stopTapping() {
+        serviceJob.cancel()
     }
 
     override fun onInterrupt() {
-        Log.d("MyLog", "something went wrong...")
+        logger.log("Something went wrong...")
     }
 
     override fun onServiceConnected() {
@@ -120,9 +126,7 @@ class TouchCatcherService @Inject constructor() : AccessibilityService() {
 
         this.serviceInfo = info
 
-        job?.start()
-
-        Log.d("MyLog", "connected!")
+        logger.log("connected!")
     }
 
     override fun onDestroy() {

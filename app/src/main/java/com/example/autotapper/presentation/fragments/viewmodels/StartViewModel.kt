@@ -1,7 +1,7 @@
 package com.example.autotapper.presentation.fragments.viewmodels
 
+import androidx.lifecycle.ViewModel
 import com.example.autotapper.navigation.BaseScreen
-import com.example.autotapper.navigation.BaseViewModel
 import com.example.autotapper.navigation.Navigator
 import com.example.autotapper.presentation.fragments.MainFragment
 import dagger.assisted.Assisted
@@ -11,7 +11,7 @@ import dagger.assisted.AssistedInject
 class StartViewModel @AssistedInject constructor (
     @Assisted private val navigator: Navigator,
     @Assisted val screen: BaseScreen,
-): BaseViewModel() {
+): ViewModel() {
 
     /**
      * Just start main fragment

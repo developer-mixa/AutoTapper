@@ -1,4 +1,4 @@
-package com.example.autotapper.domain
+package com.example.autotapper.domain.repositories
 
 interface SettingsRepository {
 

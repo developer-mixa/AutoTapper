@@ -1,34 +1,25 @@
 package com.example.autotapper.presentation.fragments.viewmodels
 
-import android.Manifest
-import android.app.AlertDialog
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
-import android.os.Debug
-import android.provider.Settings
-import android.util.Log
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import com.example.autotapper.domain.SettingsRepository
+import com.example.autotapper.domain.exceptions.ExceedingClickRateException
+import com.example.autotapper.domain.repositories.SettingsRepository
+import com.example.autotapper.domain.usecases.CheckClickSpeedUseCase
 import com.example.autotapper.navigation.BaseScreen
-import com.example.autotapper.navigation.BaseViewModel
 import com.example.autotapper.navigation.Navigator
 import com.example.autotapper.presentation.fragments.StartFragment
+import com.example.autotapper.presentation.services.TapperButtonService
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import java.lang.NumberFormatException
 
 
 class MainViewModel  @AssistedInject constructor(
     private val settingsRepository: SettingsRepository,
     @Assisted private val navigator: Navigator,
     @Assisted private val screen: BaseScreen,
-): BaseViewModel() {
+    private val checkClickSpeedUseCase: CheckClickSpeedUseCase
+): ViewModel() {
 
     /**
      * Launches start fragment if we start application for the first time
@@ -43,6 +34,22 @@ class MainViewModel  @AssistedInject constructor(
        }
         return firstEntry
     }
+
+    fun startService(speedText: String) = navigator.activityScope{
+        try {
+            val resultValue = if(speedText == "") 500 else speedText.toInt()
+            TapperButtonService.start(it, resultValue)
+        }catch (e: ExceedingClickRateException){
+            navigator.toast("Click speed must be > 100 mc!")
+        }catch (e: NumberFormatException){
+            navigator.toast("Click must be a number!")
+        }
+    }
+
+    fun stopService() = navigator.activityScope {
+        TapperButtonService.stop(it)
+    }
+
 
     @AssistedFactory
     interface Factory{

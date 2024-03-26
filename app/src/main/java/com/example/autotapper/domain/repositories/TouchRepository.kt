@@ -1,4 +1,6 @@
-package com.example.autotapper.domain
+package com.example.autotapper.domain.repositories
+
+import com.example.autotapper.domain.models.Touch
 
 interface TouchRepository {
     fun addTouch(touch: Touch)
@@ -6,7 +8,4 @@ interface TouchRepository {
     fun removeAllTouches()
 
     fun getAllTouches(): List<Touch>
-
-    fun refreshChoose()
-
 }

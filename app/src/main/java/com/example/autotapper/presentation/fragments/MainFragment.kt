@@ -41,12 +41,12 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
 
     private val requestOverlayPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (Settings.canDrawOverlays(requireContext())) {
-                showToast("Permission is granted!")
-            } else {
-                showToast("Permission is denied")
-            }
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { _ ->
+            val messageId =
+                if (Settings.canDrawOverlays(requireContext())) R.string.permission_is_granted else
+                    R.string.permission_is_denied
+
+            showToast(getString(messageId))
         }
 
     class Screen : BaseScreen
@@ -63,9 +63,9 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             if (!Settings.canDrawOverlays(requireContext())) {
                 showPermissionDialog()
             } else if (!isAccessibilitySettingsOn()) {
-                startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+                startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
             } else {
-                TapperButtonService.start(nestedActivity)
+                viewModel.startService(editTextClickSpeed.text.toString())
             }
         }
 
@@ -77,15 +77,15 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
     private fun showPermissionDialog() {
         val alert = AlertDialog.Builder(requireContext())
-            .setTitle("Требуется разрешение \"Поверх других приложений\"")
-            .setMessage("Данное разрешение требуется, для настройки экрана под ваши нужды")
+            .setTitle(getString(R.string.required_above_other_apps))
+            .setMessage(getString(R.string.above_other_apps_message))
             .setPositiveButton(
-                "Настройки"
+                getString(R.string.settings)
             ) { dialog, _ ->
                 launchSettings()
                 dialog.cancel()
             }
-            .setNegativeButton("Отмена") { dialog, _ -> dialog.cancel() }
+            .setNegativeButton(getString(R.string.cancel)) { dialog, _ -> dialog.cancel() }
             .create()
         alert.show()
     }

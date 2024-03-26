@@ -1,4 +1,4 @@
-package com.example.autotapper.domain
+package com.example.autotapper.domain.models
 
 data class Touch(
     val x: Float,
