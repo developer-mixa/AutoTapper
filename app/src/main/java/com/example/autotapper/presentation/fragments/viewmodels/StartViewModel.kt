@@ -13,6 +13,9 @@ class StartViewModel @AssistedInject constructor (
     @Assisted val screen: BaseScreen,
 ): BaseViewModel() {
 
+    /**
+     * Just start main fragment
+     */
     fun launchMainScreen() = navigator.launch(MainFragment.Screen())
 
     @AssistedFactory

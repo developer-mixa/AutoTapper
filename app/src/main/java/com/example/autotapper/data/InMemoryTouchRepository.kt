@@ -13,6 +13,9 @@ class InMemoryTouchRepository @Inject constructor() : TouchRepository {
     var choosing = false
     var performing = false
 
+    /**
+     * adds a user's click to the click list
+     */
     override fun addTouch(touch: Touch) {
         if(choosing){
             Log.d("MyLog", "added $touch")
@@ -20,14 +23,23 @@ class InMemoryTouchRepository @Inject constructor() : TouchRepository {
         }
     }
 
+    /**
+     * Remove all the touches
+     */
     override fun removeAllTouches() {
         allTouches.clear()
     }
 
+    /**
+     * Returns all current touches
+     */
     override fun getAllTouches(): List<Touch> {
         return allTouches
     }
 
+    /**
+     * Changes a choosing state
+     */
     override fun refreshChoose() {
         choosing = !choosing
 

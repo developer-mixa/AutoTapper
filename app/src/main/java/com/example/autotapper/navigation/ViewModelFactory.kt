@@ -5,6 +5,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
+/**
+ * Function for creating custom assistedFactory
+ *
+ * @param create -> function which create ViewModel
+ */
 fun provideAssistedFactory(create: () -> Any) : ViewModelProvider.Factory{
     return object : ViewModelProvider.Factory{
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -13,10 +18,18 @@ fun provideAssistedFactory(create: () -> Any) : ViewModelProvider.Factory{
     }
 }
 
+/**
+ * Function for fast creating ViewModel in some fragment
+ *
+ * @param create -> function which create ViewModel
+ */
 inline fun <reified VM: ViewModel> Fragment.screenViewModel(crossinline create: () -> Any) = viewModels<VM>{
     provideAssistedFactory { create() }
 }
 
+/**
+ * Return navigator from main activity to fragment
+ */
 fun Fragment.getMainNavigator(): MainNavigator {
     val hostActivity = requireActivity()
     val application = hostActivity.application
@@ -24,6 +37,9 @@ fun Fragment.getMainNavigator(): MainNavigator {
     return navigatorProvider[MainNavigator::class.java]
 }
 
+/**
+ * Return BaseScreen in the fragment
+ */
 fun Fragment.getBaseScreen() : BaseScreen{
     return requireArguments().getSerializable(ARG_SCREEN) as BaseScreen
 }

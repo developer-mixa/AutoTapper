@@ -30,6 +30,11 @@ class MainViewModel  @AssistedInject constructor(
     @Assisted private val screen: BaseScreen,
 ): BaseViewModel() {
 
+    /**
+     * Launches start fragment if we start application for the first time
+     *
+     * @return -> is first entry
+     * */
     fun tryLaunchStartFragment() : Boolean{
         val firstEntry = settingsRepository.isFirstEntry()
         if(firstEntry){

@@ -21,7 +21,6 @@ class DropDownFloatingActionButton @JvmOverloads constructor(
 ) : FloatingActionButton(context, attr, defStyleAttr), Checkable {
 
     private var checked = false
-
     private val animatorSet: AnimatorSet
 
     init {

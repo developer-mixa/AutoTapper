@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         if (savedInstanceState == null){
-            navigator.launchFragment(this, MainFragment.Screen(), idFragment = R.id.fragmentMainContainer)
+            navigator.launchFragment(this, MainFragment.Screen(), idContainer = R.id.fragmentMainContainer)
         }
         supportFragmentManager.registerFragmentLifecycleCallbacks(fragmentCallbacks,false)
     }

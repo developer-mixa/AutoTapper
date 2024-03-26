@@ -1,19 +1,17 @@
 package com.example.autotapper.presentation.fragments
 
 import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.provider.Settings.SettingNotFoundException
 import android.text.TextUtils.SimpleStringSplitter
-import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.Fragment
 import com.example.autotapper.R
 import com.example.autotapper.databinding.FragmentMainBinding
-import com.example.autotapper.navigation.BaseFragment
 import com.example.autotapper.navigation.BaseScreen
 import com.example.autotapper.navigation.getBaseScreen
 import com.example.autotapper.navigation.getMainNavigator
@@ -29,13 +27,13 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class MainFragment : BaseFragment(R.layout.fragment_main) {
+class MainFragment : Fragment(R.layout.fragment_main) {
 
     @Inject
     lateinit var factory: MainViewModel.Factory
 
 
-    override val viewModel: MainViewModel by screenViewModel {
+    private val viewModel: MainViewModel by screenViewModel {
         factory.create(getMainNavigator(), getBaseScreen())
     }
 
@@ -64,7 +62,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
         buttonStart.setOnClickListener {
             if (!Settings.canDrawOverlays(requireContext())) {
                 showPermissionDialog()
-            } else if (!isAccessibilitySettingsOn(nestedActivity.applicationContext)) {
+            } else if (!isAccessibilitySettingsOn()) {
                 startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
             } else {
                 TapperButtonService.start(nestedActivity)
@@ -100,29 +98,37 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
         requestOverlayPermissionLauncher.launch(intent)
     }
 
-    private fun isAccessibilitySettingsOn(mContext: Context): Boolean {
+    private fun isAccessibilitySettingsOn(): Boolean {
+        val context = nestedActivity.applicationContext
+
         var accessibilityEnabled = 0
-        val service: String =
+        val serviceName =
             nestedActivity.packageName + "/" + TouchCatcherService::class.java.canonicalName
         try {
             accessibilityEnabled = Settings.Secure.getInt(
-                mContext.applicationContext.contentResolver,
+                context.applicationContext.contentResolver,
                 Settings.Secure.ACCESSIBILITY_ENABLED
             )
         } catch (e: SettingNotFoundException) {
             e.printStackTrace()
         }
-        val mStringColonSplitter = SimpleStringSplitter(':')
+
+        /**We will receive all enabled accessibility services, we use this to separate this by ":"*/
+        val stringSplitter = SimpleStringSplitter(':')
         if (accessibilityEnabled == 1) {
+
+            /**Receive all enabled accessibility services*/
             val settingValue = Settings.Secure.getString(
-                mContext.applicationContext.contentResolver,
+                context.applicationContext.contentResolver,
                 Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
             )
             if (settingValue != null) {
-                mStringColonSplitter.setString(settingValue)
-                while (mStringColonSplitter.hasNext()) {
-                    val accessibilityService = mStringColonSplitter.next()
-                    if (accessibilityService.equals(service, ignoreCase = true)) {
+                stringSplitter.setString(settingValue)
+
+                /**Here we find our service*/
+                while (stringSplitter.hasNext()) {
+                    val accessibilityService = stringSplitter.next()
+                    if (accessibilityService.equals(serviceName, ignoreCase = true)) {
                         return true
                     }
                 }

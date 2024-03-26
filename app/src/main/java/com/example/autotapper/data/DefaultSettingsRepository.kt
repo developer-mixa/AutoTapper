@@ -15,10 +15,17 @@ class DefaultSettingsRepository @Inject constructor(
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE)
 
+    /**
+     * Returns whether the user logged in for the first time
+     */
     override fun isFirstEntry(): Boolean {
+
         return sharedPreferences.getBoolean(FIRST_ENTRY_KEY, true)
     }
 
+    /**
+     * We remove the fact that the user logged in for the first time
+     */
     override fun disableFirstEntry() {
         sharedPreferences.edit()
             .putBoolean(FIRST_ENTRY_KEY, false)

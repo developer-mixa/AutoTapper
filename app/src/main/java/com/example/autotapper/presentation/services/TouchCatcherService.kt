@@ -16,7 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
-import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -58,14 +57,15 @@ class TouchCatcherService @Inject constructor() : AccessibilityService() {
 
 
     private fun createClick(x: Float, y: Float): GestureDescription {
-        val path = Path().apply {
+        val gesturePath = Path().apply {
             moveTo(x, y)
         }
-        val strokeDescription = GestureDescription.StrokeDescription(path, 0, 1)
+        val strokeDescription = GestureDescription.StrokeDescription(gesturePath, 0, 1)
         return GestureDescription.Builder().addStroke(strokeDescription).build()
     }
 
     private suspend fun performClick(x: Float, y: Float) = withContext(Dispatchers.Main) {
+        //description of the click
         val gesture = createClick(x, y)
         val callback = object : GestureResultCallback() {
             override fun onCompleted(gestureDescription: GestureDescription) {

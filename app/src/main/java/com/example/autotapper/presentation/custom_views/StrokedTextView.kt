@@ -31,13 +31,7 @@ class StrokedTextView @JvmOverloads constructor(
     }
 
     init {
-
         initializeAttributes(attr, defStyleAttr)
-
-        if(isInEditMode){
-            text = "Hello, world!"
-        }
-
     }
 
     private fun initializeAttributes(attrs: AttributeSet?, defStyleAttr: Int) {
@@ -57,8 +51,12 @@ class StrokedTextView @JvmOverloads constructor(
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val halfWidth = strokeWidth.toInt() / 2
 
+        /**Change the padding depending on the thickness of the stroke*/
         setPadding(paddingStart + halfWidth, paddingTop, paddingRight + halfWidth, paddingBottom)
+
+        /**Calculates the size of the container where the text will be drawn, otherwise the text may be cut off*/
         calculateWidth = (MeasureSpec.getSize(widthMeasureSpec) - paddingStart)
+
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 

@@ -9,10 +9,6 @@ fun Fragment.showToast(message: String){
     Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
 }
 
-fun Fragment.showToast(@StringRes message: Int){
-    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-}
-
 val Fragment.nestedActivity: AppCompatActivity get() {
     return activity as AppCompatActivity
 }
